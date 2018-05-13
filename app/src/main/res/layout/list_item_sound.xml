@@ -7,12 +7,19 @@
             name="viewModel"
             type="com.example.msn_r.beatbox.SoundsViewModel"/>
     </data>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        >
     <Button
         android:id="@+id/sound_button"
+        android:layout_gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="match_parent"
         android:onClick="@{()->viewModel.onButtonClicked()}"
         android:text="@{viewModel.title}"
         />
+    </FrameLayout>
 
 </layout>
