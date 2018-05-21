@@ -10,10 +10,22 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
+    lintOptions {
+        // I prefer avoiding a build fail if there is any warning, for they are only warnings
+        abortOnError false
+    }
     buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            testCoverageEnabled true
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            testCoverageEnabled false
         }
     }
     dataBinding{enabled=true}
@@ -31,3 +43,43 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:2.18.3'
     testImplementation 'org.hamcrest:hamcrest-junit:2.0.0.0'
 }
+// Jacoco config
+apply plugin: 'jacoco'
+
+jacoco {
+    // Use this version for upper ones are broken (with Gradle)
+    // https://github.com/jacoco/jacoco/issues/288
+    toolVersion = "0.7.1.201405082137"
+}
+
+// Edit covered scope if needed
+// For my part I like having the coverage of both application and tests
+def coverageSourceDirs = [
+        '../app/src'
+]
+
+task jacocoTestReport(type: JacocoReport, dependsOn: "test") {
+    group = "Reporting"
+
+    description = "Generate Jacoco coverage reports"
+
+    classDirectories = fileTree(
+            dir: '../app/build/intermediates/classes',
+            excludes: ['**/R.class',
+                       '**/R$*.class',
+                       '**/*$ViewInjector*.*',
+                       '**/BuildConfig.*',
+                       '**/Manifest*.*']
+    )
+
+    additionalSourceDirs = files(coverageSourceDirs)
+    sourceDirectories = files(coverageSourceDirs)
+    executionData = files('../app/build/jacoco/testUnitTestDebug.exec')
+
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+
+}
+//end Jacoco config
